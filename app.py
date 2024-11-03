@@ -245,10 +245,9 @@ class EnhancedRAG:
         Settings.embed_model = self.embed_model
         
         self._ensure_storage_initialized()
-        # Removed automatic loading of domain-specific sources
-        # self._load_domain_specific_sources()
+        self._load_domain_specific_sources()  # 加载域特定的源
         self._start_scheduler()  # 启动调度器进行定期更新
-    
+        
     def _ensure_storage_initialized(self):
         """确保存储被正确初始化"""
         try:
@@ -591,12 +590,13 @@ Answer:"""
         return query_text
 
 def get_llm(model_name: str) -> Ollama:
-    return Ollama(model=model_name, request_timeout=120.0)
+    return Ollama(model=model_name, request_timeout=300.0, device='cuda')
 
 def get_embeddings(model_name: str) -> OllamaEmbedding:
     return OllamaEmbedding(
         model_name=model_name,
-        request_timeout=120.0
+        request_timeout=300.0,
+        device='cuda'
     )
 
 class EnhancedChatInterface:
@@ -696,7 +696,7 @@ class EnhancedChatInterface:
         st.session_state.response_times = []
         st.session_state.token_counts = []
         st.success("Conversation and feedback have been cleared.")
-        st.experimental_rerun()
+        st.rerun()
 
     def clear_cache(self):
         """清除缓存和存储目录"""
@@ -899,7 +899,7 @@ def main():
         
         # 强制刷新
         try:
-            st.experimental_rerun()
+            st.rerun()
         except AttributeError:
             try:
                 st.rerun()
